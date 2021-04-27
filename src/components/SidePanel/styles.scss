@@ -1,0 +1,14 @@
+.room-button {
+    display: block;
+    list-style-type: none;
+    cursor: pointer;
+    margin-bottom: 5px;
+    &:hover {
+        background-color: darkgrey;
+    }
+}
+
+.room-list{
+    display: flex;
+    flex-direction: column;
+}

@@ -1,0 +1,16 @@
+.chat-page-root {
+    display: flex;
+    height: 100%;
+}
+
+.side-panel-container {
+    width: 30%;
+    height: 100%;
+    background-color: brown;
+}
+
+.chat-container {
+    background-color: chocolate;
+    width: 70%;
+    height: 100%;
+}

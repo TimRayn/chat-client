@@ -1,0 +1,24 @@
+.login-page-container{
+    background-color: blueviolet;
+    form{
+        flex-direction: column;
+    }
+    height: 100%;
+    input,
+    button {
+        outline: none;
+        border-radius: 5px;
+        padding: 5px;
+        margin: 5px;
+    }
+    button{
+        width: 60px;
+    }
+}
+
+.login-page-container, 
+form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
