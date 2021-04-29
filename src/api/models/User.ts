@@ -2,6 +2,6 @@ import { Room } from './Room'
 
 export type User = {
     id: string;
-    nickname: string;
+    nickName: string;
     rooms: Room[];
 }

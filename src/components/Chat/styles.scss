@@ -1,6 +1,126 @@
-.chat-root{
-    
+.chat-root {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    .chat-container {
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        width: 100%;
+        .message-list {
+            box-sizing: border-box;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0px 20px;
+            margin: 0;
+            list-style-type: none;
+            .message-wrapper {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                .message {
+                    word-wrap: break-word;
+                    max-width: 70%;
+                    white-space: pre-wrap;
+                    width: max-content;
+                    list-style-type: none;
+                    background-color: hotpink;
+                    margin-bottom: 5px;
+                    margin-top: 0;
+                    border-radius: 5px;
+                    padding: 5px 10px;
+                    &.selected{
+                        background-color: forestgreen;
+                    }
+                }
+                &.from-owner {
+                    align-items: flex-end;
+                    span {
+                        display: none;
+                    }
+                    .message-hud {
+                        display: block;
+                    }
+                }
+                .message-hud {
+                    position: absolute;
+                    display: none;
+                    bottom: 0;
+                    height: 10px;
+                    button {
+                        font-size: 10px;
+                        background-color: transparent;
+                        color: rgb(176, 194, 206);
+                        border: none;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+    .bottom-panel {
+        background-color: rgb(55, 66, 87);
+        .send-form-container {
+            display: flex;
+            align-items: center;
+            bottom: 0;
+            width: 100%;
+            height: auto;
+            padding: 10px 0px;
+            .send-form {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                padding: 0px 10px;
+                input,
+                button {
+                    border: none;
+                }
+                textarea {
+                    font-size: 14px;
+                    width: 100%;
+                    margin-right: 5px;
+                    outline: none;
+                    word-wrap: normal;
+                    height: fit-content;
+                    padding: 5px;
+                    border-radius: 5px;
+                    resize: none;
+                }
+                button {
+                    background-image: url("./send-icon.svg");
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: 30px;
+                    background-color: transparent;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    display: block;
+                    height: 40px;
+                    flex: 0 0 40px;
+                    &:hover {
+                        background-color: rgba(56, 75, 128, 0.795);
+                    }
+                }
+            }
+        }
+        .edit-panel{
+            display: none;
+            &.mess-selected{
+                display: flex;
+            }
+            .edit-btn{
+
+            }
+            .delete-btn{
+
+            }
+            .selected-messages{
+
+            }
+        }
+    }
 }

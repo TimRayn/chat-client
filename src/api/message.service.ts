@@ -11,3 +11,8 @@ export async function sendMessage(message: CreateMessageDTO): Promise<Message> {
     const resp = await axios.post('message/create', { ...message });
     return resp.data;
 }
+
+export async function deleteMessageForAll(id:string) {
+    const resp = await axios.delete('message/delete', {params: {messageId: id}})
+    return resp.data;
+}

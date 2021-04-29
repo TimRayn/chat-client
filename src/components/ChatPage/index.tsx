@@ -20,7 +20,7 @@ const ChatPage: FC<ChatPageProps> = ({ user }) => {
         <div className="side-panel-container">
             <SidePanel rooms={user.rooms} />
         </div>
-        <div className="chat-container">
+        <div className="chat">
             <Chat room={selectedRoom} user={user} />
         </div>
     </div>);
