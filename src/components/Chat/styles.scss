@@ -18,43 +18,38 @@
             .message-wrapper {
                 width: 100%;
                 display: flex;
-                flex-direction: column;
                 position: relative;
-                .message {
+                align-items: center;
+                .message, .nickname-span{
                     word-wrap: break-word;
-                    max-width: 70%;
                     white-space: pre-wrap;
+                    border-radius: 5px;
+                    margin-bottom: 5px;
+                    color: white;
+                }
+                .message {
+                    padding: 5px 10px;
+                    max-width: 70%;
                     width: max-content;
                     list-style-type: none;
-                    background-color: hotpink;
-                    margin-bottom: 5px;
+                    background-color: rgb(42,57,70);
                     margin-top: 0;
-                    border-radius: 5px;
-                    padding: 5px 10px;
                     &.selected{
                         background-color: forestgreen;
                     }
                 }
+                .nickname-span{
+                    width: 60px;
+                    background-color: orange;
+                    padding: 5px 0px;
+                }
                 &.from-owner {
-                    align-items: flex-end;
+                    justify-content: flex-end;
                     span {
                         display: none;
                     }
                     .message-hud {
                         display: block;
-                    }
-                }
-                .message-hud {
-                    position: absolute;
-                    display: none;
-                    bottom: 0;
-                    height: 10px;
-                    button {
-                        font-size: 10px;
-                        background-color: transparent;
-                        color: rgb(176, 194, 206);
-                        border: none;
-                        cursor: pointer;
                     }
                 }
             }

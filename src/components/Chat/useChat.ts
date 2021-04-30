@@ -1,6 +1,6 @@
 import { HubConnection } from "@microsoft/signalr";
-import React, { FormEvent, useEffect, useState, KeyboardEvent } from "react";
-import { deleteMessageForAll, getAllMessagesByRoom, sendMessage } from "../../api/message.service";
+import { useEffect, useState, KeyboardEvent } from "react";
+import { deleteMessagesForAll, getAllMessagesByRoom, sendMessage, updateMessage } from "../../api/message.service";
 import { Message } from "../../api/models/Message";
 import { Room } from "../../api/models/Room";
 import { User } from "../../api/models/User";
@@ -8,17 +8,23 @@ import { setUpSignalRConnection } from "../../api/notification.service";
 
 export function useChat(room: Room, user: User) {
     const [messages, setMessages] = useState<Message[]>();
-    const [messageText, setMessageText] = useState<string>();
+    const [messageText, setMessageText] = useState<string>('');
     const [hubConnection, setHubConnection] = useState<HubConnection>();
     const [selectedMessages, setSelectedMesssages] = useState<Message[]>([]);
+    const [isEditMod, setIsEditMod] = useState<boolean>(false);
 
 
     function onMessageSent(message: Message) {
         setMessages((old) => old?.concat(message))
     }
 
-    function onMessageDeleted(message: Message) {
-        setMessages(old => old?.filter(x => x.id !== message.id));
+    function onMessagesDeleted(messages: Message[]) {
+        setMessages(old => old?.filter(x => !messages.includes(x)));
+    }
+
+    function onMessageUpdated(message: Message) {
+        const newMessages = messages?.filter(mess => mess.id !== message.id) || [];
+        setMessages([...newMessages, message]);
     }
 
     function onEnterPress(e: KeyboardEvent) {
@@ -33,23 +39,12 @@ export function useChat(room: Room, user: User) {
     }
 
     function onSelected(message: Message) {
-        console.log('1log ');
-        console.log(selectedMessages);
         if (selectedMessages.includes(message)) {
-            setSelectedMesssages(old => {
-                old.splice(old.indexOf(message), 1);
-                console.log('if');
-                
-                return old;
-            })
+            const newMess = selectedMessages.filter(mess => mess !== message);
+            setSelectedMesssages(newMess);
         }
         else {
-            setSelectedMesssages(old => {
-                old.push(message);
-                console.log('else');
-                
-                return old;
-            });
+            setSelectedMesssages([...selectedMessages, message]);
         }
     }
 
@@ -68,12 +63,20 @@ export function useChat(room: Room, user: User) {
 
     useEffect(() => {
         if (hubConnection)
-            hubConnection.on('MessageDeleted', onMessageDeleted);
+            hubConnection.on('MessagesDeleted', onMessagesDeleted);
+    }, [hubConnection]);
+
+    useEffect(() => {
+        if (hubConnection)
+            hubConnection.on('MessageUpdated', onMessageUpdated);
     }, [hubConnection]);
 
     async function handleSend() {
-        console.log(messageText)
-        if (!messageText) return;
+        if (!messageText?.trim()) return;
+        if (isEditMod) {
+            editMessage();
+            return;
+        }
         await sendMessage({
             content: messageText,
             roomId: room.roomId,
@@ -86,8 +89,37 @@ export function useChat(room: Room, user: User) {
         setMessageText(text);
     };
 
-    function onDelete(id: string) {
-        deleteMessageForAll(id);
+    async function onDelete() {
+        const messagesIds = selectedMessages.map(item => item.id);
+        await deleteMessagesForAll(messagesIds);
+        setSelectedMesssages([]);
+        setMessages(old => old?.filter(x => !messagesIds.includes(x.id)))
+    }
+
+    function onEdit() {
+        setIsEditMod(old => !old);
+        setMessageText(selectedMessages[0]?.content);
+    }
+
+    async function editMessage() {
+        setIsEditMod(old => !old);
+        const { date, roomId, userId, id } = selectedMessages[0];
+        await updateMessage({
+            content: messageText,
+            date: date,
+            roomId: roomId,
+            userId: userId,
+            id: id
+        });
+        setMessageText('');
+        setSelectedMesssages([]);
+    }
+
+    function getShortNick(nickname: string) {
+        const strArr = nickname?.split('');
+        let result = strArr[0] || '';
+        result.concat(strArr.find(x => x === x.toUpperCase()) || strArr.find(x => +x) || strArr[1] || '')
+        return result;
     }
 
     return {
@@ -98,8 +130,10 @@ export function useChat(room: Room, user: User) {
         onDelete,
         onEnterPress,
         onSelected,
-        countSelected: selectedMessages.length,
-        selectedMessages
+        selectedMessages,
+        onEdit,
+        isEditMod,
+        getShortNick
     }
 
 }
