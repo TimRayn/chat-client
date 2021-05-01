@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/7f036932-edf7-4b37-a226-ebc4f6573cc7/resourceGroups/reenbit-chat/providers/Microsoft.Web/sites/reenbit-chat-front",
+    "appService.deploySubpath": "."
+}

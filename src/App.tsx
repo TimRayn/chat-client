@@ -4,7 +4,8 @@ import { User } from "./api/models/User";
 import ChatPage from "./components/ChatPage";
 import LoginPage from "./components/LoginPage";
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+require('dotenv').config()
 
 function App() {
   const [user, setUser] = useState<User>();
