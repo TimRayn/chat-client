@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { User } from '../../api/models/User';
 import SidePanel from '../SidePanel'
 import Chat from '../Chat';
@@ -11,8 +11,8 @@ export type ChatPageProps = {
 };
 
 const ChatPage: FC<ChatPageProps> = ({ user }) => {
-    const [rooms, setRooms] = useState<Room[]>(user.rooms);
-    const [selectedRoomId, setSelectedRoomId] = useState<string>(user.rooms[0].roomId);
+    const [rooms] = useState<Room[]>(user.rooms);
+    const [selectedRoomId] = useState<string>(user.rooms[0].roomId);
 
     const selectedRoom = rooms.find((room) => room.roomId === selectedRoomId)!;
 

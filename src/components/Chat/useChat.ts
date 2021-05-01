@@ -1,5 +1,5 @@
 import { HubConnection } from "@microsoft/signalr";
-import { useEffect, useState, KeyboardEvent } from "react";
+import { useEffect, useState, KeyboardEvent, useCallback } from "react";
 import { deleteMessagesForAll, getAllMessagesByRoom, sendMessage, updateMessage } from "../../api/message.service";
 import { Message } from "../../api/models/Message";
 import { Room } from "../../api/models/Room";
@@ -22,10 +22,10 @@ export function useChat(room: Room, user: User) {
         setMessages(old => old?.filter(x => !messages.includes(x)));
     }
 
-    function onMessageUpdated(message: Message) {
-        const newMessages = messages?.filter(mess => mess.id !== message.id) || [];
-        setMessages([...newMessages, message]);
-    }
+    const onMessageUpdated = useCallback((message: Message) => {
+            const newMessages = messages?.filter(mess => mess.id !== message.id) || [];
+            setMessages([...newMessages, message]); 
+    }, [messages])
 
     function onEnterPress(e: KeyboardEvent) {
         if (e.key === 'Enter') {
@@ -69,7 +69,7 @@ export function useChat(room: Room, user: User) {
     useEffect(() => {
         if (hubConnection)
             hubConnection.on('MessageUpdated', onMessageUpdated);
-    }, [hubConnection]);
+    }, [hubConnection, onMessageUpdated]);
 
     async function handleSend() {
         if (!messageText?.trim()) return;

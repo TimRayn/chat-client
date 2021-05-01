@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { Room } from '../../api/models/Room';
 import { User } from '../../api/models/User';
 import { useChat } from './useChat'
