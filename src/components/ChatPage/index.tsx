@@ -13,7 +13,7 @@ export type ChatPageProps = {
 
 const ChatPage: FC<ChatPageProps> = ({ user }) => {
     const [rooms, setRooms] = useState<Room[]>(user.rooms);
-    const [selectedRoomId, setSelectedRoomId] = useState<string>(user.rooms[0].roomId);
+    const [selectedRoomId, setSelectedRoomId] = useState<string>("b7c83c21-09f2-46c2-9cb1-461aea2565d4");
 
     const selectedRoom = rooms.find((room) => room.roomId === selectedRoomId)!;
 
