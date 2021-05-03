@@ -13,23 +13,23 @@ export type ChatPageProps = {
 
 const ChatPage: FC<ChatPageProps> = ({ user }) => {
     const [rooms, setRooms] = useState<Room[]>(user.rooms);
-    const [selectedRoomId, setSelectedRoom] = useState<string>(user.rooms[0].roomId);
+    const [selectedRoomId, setSelectedRoomId] = useState<string>(user.rooms[0].roomId);
 
     const selectedRoom = rooms.find((room) => room.roomId === selectedRoomId)!;
 
     const selectRoom = (roomId: string) => {
-        setSelectedRoom(roomId);
+        setSelectedRoomId(roomId);
     }
 
     const onRoomCreated = (room: Room) => {
-        setRooms((old) => old.concat(room))
+        setRooms((old) => old.concat(room));
+        setSelectedRoomId(room.roomId);
     }
 
     const onUserJoined = (dto: UserJoinedDTO) => {
         console.log(dto);
         setRooms((old) => {
             const room = old.find((r) => r.roomId === dto.roomId);
-            console.log(room);
             if (room)
                 return old.filter((r) => r.roomId !== dto.roomId).concat({...room, users: room?.users.concat(dto.user)});
             return old;
@@ -38,10 +38,10 @@ const ChatPage: FC<ChatPageProps> = ({ user }) => {
 
     return (<div className='chat-page-root'>
         <div className="side-panel-container">
-            <SidePanel rooms={rooms} selectRoom={selectRoom} />
+            <SidePanel rooms={rooms} user={user} selectRoom={selectRoom} selectedRoomId={selectedRoomId}/>
         </div>
         <div className="chat">
-            <Chat room={selectedRoom} user={user} onRoomCreated={onRoomCreated} onUserJoined={onUserJoined} />
+            <Chat room={selectedRoom} user={user} onRoomCreated={onRoomCreated} setSelectedRoomId={setSelectedRoomId} onUserJoined={onUserJoined} />
         </div>
     </div>);
 };

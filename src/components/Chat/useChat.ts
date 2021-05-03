@@ -1,6 +1,6 @@
 import { HubConnection } from "@microsoft/signalr";
 import { useEffect, useState, KeyboardEvent, useCallback } from "react";
-import { deleteMessagesForAll, getMessages, sendMessage, updateMessage } from "../../api/message.service";
+import { deleteMessages, getMessages, sendMessage, updateMessage } from "../../api/message.service";
 import { createRoom } from "../../api/room.service"
 import { Message } from "../../api/models/Message";
 import { Room } from "../../api/models/Room";
@@ -9,17 +9,22 @@ import { UserJoinedDTO } from "../../api/models/UserJoinedDTO"
 import { setUpSignalRConnection } from "../../api/notification.service";
 
 export function useChat(
-    room: Room, 
-    user: User, 
-    onRoomCreated: (room: Room) => void, 
-    onUserJoined: (dto: UserJoinedDTO) => void) 
-    {
+    room: Room,
+    user: User,
+    onRoomCreated: (room: Room) => void,
+    onUserJoined: (dto: UserJoinedDTO) => void,
+    setSelectedRoomId: (roomId: string) => void) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [messageText, setMessageText] = useState<string>('');
     const [hubConnection, setHubConnection] = useState<HubConnection>();
     const [selectedMessages, setSelectedMesssages] = useState<Message[]>([]);
     const [isEditMod, setIsEditMod] = useState<boolean>(false);
     const [hasMore, setHasMore] = useState<boolean>(true);
+    const [repliedMessage, setRepliedMessage] = useState<string>('');
+
+    function onReply() {
+        setRepliedMessage(selectedMessages[0].content);
+    }
 
     function onMessageSent(message: Message) {
         setMessages((old) => {
@@ -28,6 +33,7 @@ export function useChat(
             return newMessages;
         })
     }
+
 
     function onMessagesDeleted(messages: Message[]) {
         setMessages(old => old?.filter(x => !messages.includes(x)));
@@ -66,7 +72,7 @@ export function useChat(
         console.log('room created');
         onRoomCreated(room);
         if (hubConnection)
-            hubConnection.invoke('RegisterMessageListeningForRoom', room.roomId)
+            hubConnection.invoke('RegisterMessageListeningForRoom', room.roomId);
     }, [hubConnection, onRoomCreated])
 
     useEffect(() => {
@@ -79,7 +85,7 @@ export function useChat(
             hubConnection.on('UserJoined', onUserJoined)
         }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hubConnection]);
 
     async function handleSend() {
@@ -100,9 +106,9 @@ export function useChat(
         setMessageText(text);
     };
 
-    async function onDelete() {
+    async function onDelete(forOne: boolean) {
         const messagesIds = selectedMessages.map(item => item.id);
-        await deleteMessagesForAll(messagesIds);
+        await deleteMessages(messagesIds, forOne);
         setSelectedMesssages([]);
         setMessages(old => old?.filter(x => !messagesIds.includes(x.id)))
     }
@@ -114,13 +120,15 @@ export function useChat(
 
     async function editMessage() {
         setIsEditMod(old => !old);
-        const { date, roomId, userId, id } = selectedMessages[0];
+        const { date, roomId, userId, id, isDeletedForOwner } = selectedMessages[0];
         await updateMessage({
             content: messageText,
             date: date,
             roomId: roomId,
             userId: userId,
-            id: id
+            id: id,
+            isDeletedForOwner: isDeletedForOwner,
+            repliedMessageContent: ""
         });
         setMessageText('');
         setSelectedMesssages([]);
@@ -135,7 +143,7 @@ export function useChat(
 
     function updateMessages(messages: Message[], replace: boolean) {
         setMessages((old) => replace ? messages : old.concat(messages));
-        if(messages.length < 20) setHasMore(false);
+        if (messages.length < 20) setHasMore(false);
     }
 
     async function loadMessages() {
@@ -144,17 +152,20 @@ export function useChat(
         updateMessages(data, false);
     }
 
-    useEffect(() => { 
+    useEffect(() => {
         getMessages(room.roomId, new Date().toISOString(), 20).then((data) => {
             updateMessages(data, true);
             setHasMore(true);
+            setSelectedMesssages([]);
         });
-     }, [room])
+    }, [room])
 
-     async function createPrivateRoom() {
-         const message = selectedMessages[0];
-         await createRoom([user.id, message.userId]);
-     }
+    async function createPrivateRoom() {
+        const message = selectedMessages[0];
+        const ExistingRoomId = user.rooms.find(room => room.users[0].id === message.userId)?.roomId;
+        if (ExistingRoomId) setSelectedRoomId(ExistingRoomId);
+        else await createRoom([user.id, message.userId]);
+    }
 
     return {
         messages,
@@ -170,7 +181,8 @@ export function useChat(
         getShortNick,
         loadMessages,
         hasMore,
-        createPrivateRoom
+        createPrivateRoom,
+        onReply
     }
 
 }

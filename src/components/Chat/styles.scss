@@ -34,23 +34,40 @@
                     max-width: 70%;
                     width: max-content;
                     list-style-type: none;
-                    background-color: rgb(42, 57, 70);
+                    background-color: rgb(24,37,51);
                     margin-top: 0;
                     &.selected {
                         background-color: forestgreen;
                     }
                 }
                 .nickname-span {
-                    width: 60px;
+                    width: 55px;
                     background-color: rgb(2, 1, 12);
                     padding: 5px 5px;
+                    margin-right: 5px;
                     text-overflow: clip;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
+                    &:hover::after{
+                        position: absolute;
+                        content: attr(data-name);
+                        left: 10px;
+                        top: 20px;
+                        z-index: 1;
+                        background-color: rgb(2, 1, 12);
+                        border-radius: 5px;
+                        padding: 5px;
+                    }
                 }
                 &.from-owner {
                     justify-content: flex-end;
+                    .message{
+                        background-color: rgb(43,82,120);
+                        &.selected {
+                            background-color: forestgreen;
+                        }
+                    }
                     .nickname-span {
                         display: none;
                     }
@@ -107,6 +124,7 @@
         }
         .edit-panel {
             display: none;
+            flex-wrap: wrap;
             &.mess-selected {
                 display: flex;
             }

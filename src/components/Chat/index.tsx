@@ -12,46 +12,54 @@ export type ChatProps = {
     user: User;
     onRoomCreated: (room: Room) => void;
     onUserJoined: (dto: UserJoinedDTO) => void;
+    setSelectedRoomId: (roomId: string) => void;
 }
 
-const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined }) => {
-    const { 
-        messages, 
-        messageText, 
-        handleSend, 
-        onMessageTextChange, 
-        onDelete, 
-        onEnterPress, 
-        hasMore, 
-        onSelected, 
-        selectedMessages, 
-        onEdit, 
-        isEditMod, 
-        loadMessages, 
-        createPrivateRoom } = useChat(room, user, onRoomCreated, onUserJoined);
+const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelectedRoomId }) => {
+    const {
+        messages,
+        messageText,
+        handleSend,
+        onMessageTextChange,
+        onDelete,
+        onEnterPress,
+        hasMore,
+        onSelected,
+        selectedMessages,
+        onEdit,
+        isEditMod,
+        loadMessages,
+        createPrivateRoom,
+        onReply } = useChat(room, user, onRoomCreated, onUserJoined, setSelectedRoomId);
 
     function buildMessage(message: Message, selectedMessages: Message[]) {
+        console.log(message);
+        if (message.isDeletedForOwner && message.userId === user.id) return;
         const classFromOwner = message.userId === user.id ? ' from-owner' : '';
         const classSelected = selectedMessages.includes(message) ? ' selected' : '';
+        const nick = room?.users?.find(x => x.id === message.userId)?.nickName;
+
 
         return (
             <li
                 key={message.id}
                 className={`message-wrapper${classFromOwner}`} >
                 <div
-                    className='nickname-span'>
-                    {room.users.find(x => x.id === message.userId)?.nickName}
+                    className='nickname-span'
+                    data-name={nick}>
+                    {nick}
                 </div>
                 <p
                     className={`message${classSelected}`}
-                    onClick={() => onSelected(message)}>
+                    onClick={() => !isEditMod ? onSelected(message) : null}>
                     {message.content}
                 </p>
             </li>)
     }
 
     const classMessSelected = selectedMessages.length > 0 ? ' mess-selected' : '';
-    const isDisabled = selectedMessages.length !== 1;
+    const isDisabledByCount = selectedMessages.length !== 1;
+    const isDisabledByOwner = selectedMessages.some(x => x.userId !== user.id);
 
     return (
         <div className='chat-root'>
@@ -88,10 +96,27 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined }) => {
                 </div>
                 <div className={`edit-panel${classMessSelected}`}>
                     <span className='selected-messages'>SELECTED: {selectedMessages.length}</span>
-                    <button className='edit-btn' disabled={isDisabled} onClick={onEdit}>EDIT</button>
-                    <button className='delete-btn' onClick={onDelete}>DELETE</button>
+                    <button
+                        className='edit-btn'
+                        disabled={isDisabledByCount || isDisabledByOwner}
+                        onClick={onEdit}>EDIT</button>
+                    <button
+                        className='delete-btn'
+                        disabled={isDisabledByOwner}
+                        onClick={() => onDelete(false)}>DELETE FOR ALL</button>
+                    <button
+                        className='delete-for-one-btn'
+                        disabled={isDisabledByOwner}
+                        onClick={() => onDelete(true)}>DELETE FOR ME</button>
                     {isEditMod ? <span>EDITING</span> : null}
-                    <button className='send-private-btn' onClick={createPrivateRoom}>TO PRIVATE</button>
+                    <button
+                        className='send-private-btn'
+                        disabled={isDisabledByCount || !isDisabledByOwner}
+                        onClick={createPrivateRoom}>TO PRIVATE</button>
+                    <button
+                        className='reply-btn'
+                        disabled={isDisabledByCount}
+                        onClick={onReply} >REPLY</button>
                 </div>
             </div>
         </div >);

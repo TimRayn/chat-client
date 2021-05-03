@@ -12,8 +12,8 @@ export async function sendMessage(message: CreateMessageDTO): Promise<Message> {
     return resp.data;
 }
 
-export async function deleteMessagesForAll(ids: string[]) {
-    const resp = await axios.delete('message/delete', { data: [...ids] })
+export async function deleteMessages(ids: string[], forOwner: boolean) {
+    const resp = await axios.delete('message/delete', { data: [...ids], params: {forOwner} })
     return resp.data;
 }
 

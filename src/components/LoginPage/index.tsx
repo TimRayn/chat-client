@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useState } from 'react';
+import { FC, FormEvent, useState } from 'react';
 import { User } from '../../api/models/User';
 import { login } from '../../api/user.service';
 import './styles.scss';
@@ -9,8 +9,10 @@ export type LoginPageProps = {
 
 const LoginPage: FC<LoginPageProps> = ({ onLogin }) => {
     const [nickname, setNickname] = useState<string>('');
+    const [loginLocked, setLoginLocked] = useState<boolean>(false);
 
     const handleLogin = async (e: FormEvent) => {
+        setLoginLocked(true);
         e.preventDefault();
         if (!nickname) return;
         const user = await login(nickname);
@@ -25,7 +27,7 @@ const LoginPage: FC<LoginPageProps> = ({ onLogin }) => {
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)} />
-                <button type='submit'>Login</button>
+                <button type='submit' disabled={loginLocked}>Login</button>
             </form>
         </div>
     );

@@ -4,4 +4,6 @@ export type Message = {
     date: string;
     userId: string;
     roomId: string;
+    isDeletedForOwner: boolean;
+    repliedMessageContent: string;
 }
