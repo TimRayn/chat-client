@@ -11,45 +11,48 @@
             box-sizing: border-box;
             width: 100%;
             display: flex;
-            flex-direction: column;
-            padding: 0px 20px;
+            flex-direction: column-reverse;
+            padding: 0px 5px;
             margin: 0;
             list-style-type: none;
+            overflow: auto;
             .message-wrapper {
                 width: 100%;
                 display: flex;
                 position: relative;
                 align-items: center;
-                .message, .nickname-span{
+                .message,
+                .nickname-span {
                     word-wrap: break-word;
-                    white-space: pre-wrap;
                     border-radius: 5px;
                     margin-bottom: 5px;
                     color: white;
                 }
                 .message {
+                    white-space: pre-wrap;
                     padding: 5px 10px;
                     max-width: 70%;
                     width: max-content;
                     list-style-type: none;
-                    background-color: rgb(42,57,70);
+                    background-color: rgb(42, 57, 70);
                     margin-top: 0;
-                    &.selected{
+                    &.selected {
                         background-color: forestgreen;
                     }
                 }
-                .nickname-span{
+                .nickname-span {
                     width: 60px;
-                    background-color: orange;
-                    padding: 5px 0px;
+                    background-color: rgb(2, 1, 12);
+                    padding: 5px 5px;
+                    text-overflow: clip;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 &.from-owner {
                     justify-content: flex-end;
-                    span {
+                    .nickname-span {
                         display: none;
-                    }
-                    .message-hud {
-                        display: block;
                     }
                 }
             }
@@ -102,19 +105,16 @@
                 }
             }
         }
-        .edit-panel{
+        .edit-panel {
             display: none;
-            &.mess-selected{
+            &.mess-selected {
                 display: flex;
             }
-            .edit-btn{
-
+            .edit-btn {
             }
-            .delete-btn{
-
+            .delete-btn {
             }
-            .selected-messages{
-
+            .selected-messages {
             }
         }
     }

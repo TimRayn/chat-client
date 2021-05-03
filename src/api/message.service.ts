@@ -21,3 +21,8 @@ export async function updateMessage(message: Message) {
     const resp = await axios.put('message/update', { ...message });
     return resp.data;
 }
+
+export async function getMessages(roomId: string, from: string, count: number) {
+    const resp = await axios.get('message/get', { params: { roomId, from, count }});
+    return resp.data;
+}
