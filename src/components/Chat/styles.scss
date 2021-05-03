@@ -34,10 +34,25 @@
                     max-width: 70%;
                     width: max-content;
                     list-style-type: none;
-                    background-color: rgb(24,37,51);
+                    background-color: rgb(24, 37, 51);
                     margin-top: 0;
                     &.selected {
                         background-color: forestgreen;
+                    }
+                    .replied-message {
+                        display: none;
+                        &.show {
+                            display: flex;
+                        }
+                        .line {
+                            width: 3px;
+                            border: none;
+                            margin-right: 10px;
+                            border-radius: 5px;
+                            background-color: #7c9df8;
+                        }
+                        .replied-content {
+                        }
                     }
                 }
                 .nickname-span {
@@ -49,11 +64,12 @@
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
-                    &:hover::after{
+                    align-self: flex-end;
+                    &:hover::after {
                         position: absolute;
                         content: attr(data-name);
                         left: 10px;
-                        top: 20px;
+                        bottom: -20px;
                         z-index: 1;
                         background-color: rgb(2, 1, 12);
                         border-radius: 5px;
@@ -62,8 +78,8 @@
                 }
                 &.from-owner {
                     justify-content: flex-end;
-                    .message{
-                        background-color: rgb(43,82,120);
+                    .message {
+                        background-color: rgb(43, 82, 120);
                         &.selected {
                             background-color: forestgreen;
                         }
@@ -125,6 +141,7 @@
         .edit-panel {
             display: none;
             flex-wrap: wrap;
+            transition: 0.2s;
             &.mess-selected {
                 display: flex;
             }
@@ -135,5 +152,58 @@
             .selected-messages {
             }
         }
+        .reply-panel {
+            display: none;
+            margin: 5px 55px 0px 10px;
+            border-radius: 7px;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #1a1e43;
+            transition: 0.2s;
+            &.show {
+                display: flex;
+            }
+            .reply-span {
+                text-overflow: clip;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding: 10px 20px;
+                color: white;
+            }
+            .cancel-btn {
+                width: 20px;
+                height: 20px;
+                border: none;
+                background-position: center;
+                margin-right: 20px;
+                padding: 0;
+                background-image: url(./close-icon.svg);
+                background-color: transparent;
+                background-repeat: no-repeat;
+                cursor: pointer;
+                transition: 0.3s;
+                &:hover {
+                    background-image: url(./close-icon-light.svg);
+                }
+            }
+        }
     }
 }
+
+// .reply-modal{
+//     position: fixed;
+//     top: 20px;
+//     left: calc(50% - 50px);
+//     background-color: rgb(21, 21, 110);
+//     color: white;
+//     display: none;
+//     justify-content: center;
+//     align-items: center;
+//     padding: 30px 50px;
+//     border-radius: 20px;
+//     z-index: 1;
+//     &.show{
+//         display: flex;
+//     }
+// }

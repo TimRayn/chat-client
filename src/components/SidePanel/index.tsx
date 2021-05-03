@@ -18,7 +18,7 @@ const SidePanel: FC<SidePanelProps> = ({ user, rooms, selectedRoomId, selectRoom
             key={room.roomId}
             className={`room-button${selectedRoomId === room.roomId ? " selected" : ""}`}
             onClick={() => selectRoom(room.roomId)}>
-            {room.name || room.users.map((x) => x.nickName)}
+            {room.name || room.users.filter((x) => x.nickName !== user.nickName)[0].nickName}
         </li> : null);
 
     return (

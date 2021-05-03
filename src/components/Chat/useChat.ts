@@ -24,6 +24,7 @@ export function useChat(
 
     function onReply() {
         setRepliedMessage(selectedMessages[0].content);
+        setSelectedMesssages([]);
     }
 
     function onMessageSent(message: Message) {
@@ -97,8 +98,10 @@ export function useChat(
         await sendMessage({
             content: messageText,
             roomId: room.roomId,
-            userId: user.id
+            userId: user.id,
+            repliedMessageContent: repliedMessage
         });
+        setRepliedMessage('');
         setMessageText('');
     };
 
@@ -167,6 +170,10 @@ export function useChat(
         else await createRoom([user.id, message.userId]);
     }
 
+    function onCancelReply() {
+        setRepliedMessage('');
+    }
+
     return {
         messages,
         messageText,
@@ -182,7 +189,9 @@ export function useChat(
         loadMessages,
         hasMore,
         createPrivateRoom,
-        onReply
+        onReply,
+        repliedMessage,
+        onCancelReply
     }
 
 }

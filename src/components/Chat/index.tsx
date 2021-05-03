@@ -30,7 +30,9 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
         isEditMod,
         loadMessages,
         createPrivateRoom,
-        onReply } = useChat(room, user, onRoomCreated, onUserJoined, setSelectedRoomId);
+        onReply,
+        repliedMessage,
+        onCancelReply } = useChat(room, user, onRoomCreated, onUserJoined, setSelectedRoomId);
 
     function buildMessage(message: Message, selectedMessages: Message[]) {
         console.log(message);
@@ -49,17 +51,24 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
                     data-name={nick}>
                     {nick}
                 </div>
-                <p
+                <div
                     className={`message${classSelected}`}
-                    onClick={() => !isEditMod ? onSelected(message) : null}>
+                    onClick={() => !isEditMod && !locked ? onSelected(message) : null}>
+                    <div className={`replied-message${message.repliedMessageContent ? ' show' : ''}`}>
+                        <div className='line'></div>
+                        {/* <span className='replied-user-name'>{repliedMessage}</span> */}
+                        <span className='replied-content'>{message.repliedMessageContent}</span>
+
+                    </div>
                     {message.content}
-                </p>
+                </div>
             </li>)
     }
 
     const classMessSelected = selectedMessages.length > 0 ? ' mess-selected' : '';
     const isDisabledByCount = selectedMessages.length !== 1;
     const isDisabledByOwner = selectedMessages.some(x => x.userId !== user.id);
+    const locked = Boolean(repliedMessage);
 
     return (
         <div className='chat-root'>
@@ -80,6 +89,10 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
                 </ul>
             </div>
             <div className='bottom-panel'>
+                <div className={`reply-panel${locked ? ' show' : ''}`}>
+                    <span className='reply-span'>{repliedMessage}</span>
+                    <button className='cancel-btn' onClick={onCancelReply}></button>
+                </div>
                 <div className='send-form-container'>
                     <div className='send-form'>
                         <textarea
@@ -98,24 +111,24 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
                     <span className='selected-messages'>SELECTED: {selectedMessages.length}</span>
                     <button
                         className='edit-btn'
-                        disabled={isDisabledByCount || isDisabledByOwner}
+                        disabled={isDisabledByCount || isDisabledByOwner || locked}
                         onClick={onEdit}>EDIT</button>
                     <button
                         className='delete-btn'
-                        disabled={isDisabledByOwner}
+                        disabled={isDisabledByOwner || locked}
                         onClick={() => onDelete(false)}>DELETE FOR ALL</button>
                     <button
                         className='delete-for-one-btn'
-                        disabled={isDisabledByOwner}
+                        disabled={isDisabledByOwner || locked}
                         onClick={() => onDelete(true)}>DELETE FOR ME</button>
                     {isEditMod ? <span>EDITING</span> : null}
                     <button
                         className='send-private-btn'
-                        disabled={isDisabledByCount || !isDisabledByOwner}
+                        disabled={isDisabledByCount || !isDisabledByOwner || locked}
                         onClick={createPrivateRoom}>TO PRIVATE</button>
                     <button
                         className='reply-btn'
-                        disabled={isDisabledByCount}
+                        disabled={isDisabledByCount || locked}
                         onClick={onReply} >REPLY</button>
                 </div>
             </div>
@@ -124,3 +137,12 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
 
 export default Chat;
 
+// export type ModalProps = {
+//     isShow: boolean
+// }
+
+// export const ReplyModal: FC<ModalProps> = ({isShow}) => {
+//     return (<div className={`reply-modal${isShow ? ' show' : ''}`}>
+//         <span>Choose room to reply.</span>
+//     </div>)
+// }
