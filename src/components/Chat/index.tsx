@@ -108,26 +108,28 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
                     </div>
                 </div>
                 <div className={`edit-panel${classMessSelected}`}>
-                    <span className='selected-messages'>SELECTED: {selectedMessages.length}</span>
+                    <div className='span-container'>
+                        <span className='selected-messages'>SELECTED: {selectedMessages.length}</span>
+                    </div>
+                    {isEditMod ? <div className='span-container'><span>EDITING</span></div> : null}
                     <button
-                        className='edit-btn'
+                        className={`${isDisabledByCount || isDisabledByOwner || locked ? 'disabled' : 'active'}`}
                         disabled={isDisabledByCount || isDisabledByOwner || locked}
                         onClick={onEdit}>EDIT</button>
                     <button
-                        className='delete-btn'
+                        className={`${isDisabledByOwner || locked ? 'disabled' : 'active'}`}
                         disabled={isDisabledByOwner || locked}
                         onClick={() => onDelete(false)}>DELETE FOR ALL</button>
                     <button
-                        className='delete-for-one-btn'
+                        className={`${isDisabledByOwner || locked ? 'disabled' : 'active'}`}
                         disabled={isDisabledByOwner || locked}
                         onClick={() => onDelete(true)}>DELETE FOR ME</button>
-                    {isEditMod ? <span>EDITING</span> : null}
                     <button
-                        className='send-private-btn'
+                        className={`${isDisabledByCount || !isDisabledByOwner || locked ? 'disabled' : 'active'}`}
                         disabled={isDisabledByCount || !isDisabledByOwner || locked}
                         onClick={createPrivateRoom}>TO PRIVATE</button>
                     <button
-                        className='reply-btn'
+                        className={`${isDisabledByCount || locked ? 'disabled' : 'active'}`}
                         disabled={isDisabledByCount || locked}
                         onClick={onReply} >REPLY</button>
                 </div>

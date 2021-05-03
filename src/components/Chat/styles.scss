@@ -93,6 +93,7 @@
     }
     .bottom-panel {
         background-color: rgb(55, 66, 87);
+        transition: 0.3s;
         .send-form-container {
             display: flex;
             align-items: center;
@@ -128,12 +129,15 @@
                     background-size: 30px;
                     background-color: transparent;
                     cursor: pointer;
-                    border-radius: 50%;
+                    border-radius: 5px;
+                    border-top-right-radius: 70%;
+                    border-bottom-right-radius: 70%;
                     display: block;
                     height: 40px;
                     flex: 0 0 40px;
+                    transition: 0.3s;
                     &:hover {
-                        background-color: rgba(56, 75, 128, 0.795);
+                        background-color: rgba(82, 112, 194, 0.884);
                     }
                 }
             }
@@ -141,15 +145,45 @@
         .edit-panel {
             display: none;
             flex-wrap: wrap;
-            transition: 0.2s;
+            transition: 0.3s;
+            font-weight: bold;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 0px 10px 10px 10px;
             &.mess-selected {
                 display: flex;
             }
-            .edit-btn {
+            .span-container,
+            button {
+                border: none;
+                outline: none;
+                color: #dae0fb;
             }
-            .delete-btn {
+            .span-container {
+                margin-left: 0;
+                margin-right: 0;
+                padding: 5px;
+                border-right: 2px solid rgb(173, 186, 214);
+                span {
+                    color: #dae0fb;
+                }
             }
-            .selected-messages {
+            button {
+                margin: 5px 0px 0px 5px;
+                border-radius: 5px;
+                background-color: #3b70a2;
+                font: inherit;
+                padding: 5px;
+                transition: 0.3s;
+                &.disabled {
+                    background-color: #595d7845;
+                    color: #8c93b05e;
+                }
+                &.active {
+                    &:hover {
+                        background-color: #6291be;
+                    }
+                }
             }
         }
         .reply-panel {
