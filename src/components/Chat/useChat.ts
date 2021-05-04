@@ -32,7 +32,7 @@ export function useChat(
             const newMessages = [...old];
             newMessages.unshift(message);
             return newMessages;
-        })
+        })     
     }
 
 
@@ -40,15 +40,12 @@ export function useChat(
         setMessages(old => old?.filter(x => !messages.includes(x)));
     }
 
-    const onMessageUpdated = (message: Message) => {
-        console.log("message: ", messages);
-        const newMessages = [...messages];
-        console.log("oldMessas: ", messages);
-        
-        newMessages.splice(newMessages.findIndex(x => x.id === message.id), 1, message);
-        console.log("newMEssas: ", newMessages);
-        
-        setMessages(newMessages);
+    function onMessageUpdated(message: Message) {  
+        setMessages((old) => {
+            const newMessages = [...old];  
+            newMessages.splice(newMessages.findIndex(x => x.id === message.id), 1, message);
+            return newMessages;
+        });
     };
 
     function onEnterPress(e: KeyboardEvent) {
@@ -77,7 +74,6 @@ export function useChat(
     }, [user]);
 
     const handleRoomCreated = useCallback((room: Room) => {
-        console.log('room created');
         onRoomCreated(room);
         if (hubConnection)
             hubConnection.invoke('RegisterMessageListeningForRoom', room.roomId);
@@ -85,7 +81,6 @@ export function useChat(
 
     useEffect(() => {
         if (hubConnection) {
-            console.log('Subscribe');
             hubConnection.on('MessageSent', onMessageSent);
             hubConnection.on('MessagesDeleted', onMessagesDeleted);
             hubConnection.on('MessageUpdated', onMessageUpdated);
