@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useRef } from 'react'
 import { Room } from '../../api/models/Room';
 import { User } from '../../api/models/User';
 import { useChat } from './useChat'
@@ -34,13 +34,13 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
         repliedMessage,
         onCancelReply } = useChat(room, user, onRoomCreated, onUserJoined, setSelectedRoomId);
 
+    const scrollRef = useRef<HTMLUListElement>(null);
+
     function buildMessage(message: Message, selectedMessages: Message[]) {
-        console.log(message);
         if (message.isDeletedForOwner && message.userId === user.id) return;
         const classFromOwner = message.userId === user.id ? ' from-owner' : '';
         const classSelected = selectedMessages.includes(message) ? ' selected' : '';
         const nick = room?.users?.find(x => x.id === message.userId)?.nickName;
-
 
         return (
             <li
@@ -58,7 +58,6 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
                         <div className='line'></div>
                         {/* <span className='replied-user-name'>{repliedMessage}</span> */}
                         <span className='replied-content'>{message.repliedMessageContent}</span>
-
                     </div>
                     {message.content}
                 </div>
@@ -70,11 +69,23 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
     const isDisabledByOwner = selectedMessages.some(x => x.userId !== user.id);
     const locked = Boolean(repliedMessage);
 
+    useEffect(() => {
+        return () => {
+            if (scrollRef.current) {
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                const hasScroll = scrollRef.current.scrollHeight > scrollRef.current.clientHeight;
+                if (!hasScroll && hasMore && messages.length > 0) {
+                    loadMessages();
+                }
+            }
+        }
+    }, [scrollRef, hasMore, loadMessages, messages])
+
     return (
         <div className='chat-root'>
             <div className='chat-container'>
                 <ul className='message-list'
-                    id="scrollableDiv">
+                    id="scrollableDiv" ref={scrollRef}>
                     <InfiniteScroll
                         dataLength={messages?.length ?? 0}
                         next={loadMessages}
@@ -117,20 +128,20 @@ const Chat: FC<ChatProps> = ({ room, user, onRoomCreated, onUserJoined, setSelec
                         disabled={isDisabledByCount || isDisabledByOwner || locked}
                         onClick={onEdit}>EDIT</button>
                     <button
-                        className={`${isDisabledByOwner || locked ? 'disabled' : 'active'}`}
-                        disabled={isDisabledByOwner || locked}
+                        className={`${isDisabledByOwner || locked || isEditMod ? 'disabled' : 'active'}`}
+                        disabled={isDisabledByOwner || locked || isEditMod}
                         onClick={() => onDelete(false)}>DELETE FOR ALL</button>
                     <button
-                        className={`${isDisabledByOwner || locked ? 'disabled' : 'active'}`}
-                        disabled={isDisabledByOwner || locked}
+                        className={`${isDisabledByOwner || locked || isEditMod ? 'disabled' : 'active'}`}
+                        disabled={isDisabledByOwner || locked || isEditMod}
                         onClick={() => onDelete(true)}>DELETE FOR ME</button>
                     <button
                         className={`${isDisabledByCount || !isDisabledByOwner || locked ? 'disabled' : 'active'}`}
                         disabled={isDisabledByCount || !isDisabledByOwner || locked}
                         onClick={createPrivateRoom}>TO PRIVATE</button>
                     <button
-                        className={`${isDisabledByCount || locked ? 'disabled' : 'active'}`}
-                        disabled={isDisabledByCount || locked}
+                        className={`${isDisabledByCount || locked || isEditMod ? 'disabled' : 'active'}`}
+                        disabled={isDisabledByCount || locked || isEditMod}
                         onClick={onReply} >REPLY</button>
                 </div>
             </div>

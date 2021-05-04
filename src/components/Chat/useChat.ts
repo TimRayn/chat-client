@@ -41,7 +41,14 @@ export function useChat(
     }
 
     const onMessageUpdated = (message: Message) => {
-        setMessages((old) => [...old?.filter(mess => mess.id !== message.id), message]);
+        console.log("message: ", messages);
+        const newMessages = [...messages];
+        console.log("oldMessas: ", messages);
+        
+        newMessages.splice(newMessages.findIndex(x => x.id === message.id), 1, message);
+        console.log("newMEssas: ", newMessages);
+        
+        setMessages(newMessages);
     };
 
     function onEnterPress(e: KeyboardEvent) {
@@ -92,7 +99,7 @@ export function useChat(
     async function handleSend() {
         if (!messageText?.trim()) return;
         if (isEditMod) {
-            editMessage();
+            await editMessage();
             return;
         }
         await sendMessage({
@@ -123,18 +130,14 @@ export function useChat(
 
     async function editMessage() {
         setIsEditMod(old => !old);
-        const { date, roomId, userId, id, isDeletedForOwner } = selectedMessages[0];
+        const { roomId,  id, } = selectedMessages[0];
         await updateMessage({
             content: messageText,
-            date: date,
             roomId: roomId,
-            userId: userId,
-            id: id,
-            isDeletedForOwner: isDeletedForOwner,
-            repliedMessageContent: ""
+            id: id
         });
-        setMessageText('');
         setSelectedMesssages([]);
+        setMessageText('');
     }
 
     function getShortNick(nickname: string) {
@@ -145,7 +148,7 @@ export function useChat(
     }
 
     function updateMessages(messages: Message[], replace: boolean) {
-        setMessages((old) => replace ? messages : old.concat(messages));
+        setMessages((old) => replace ? messages : old.concat(messages.filter((mes)=> !old.some((x) => x.id === mes.id))));
         if (messages.length < 20) setHasMore(false);
     }
 
