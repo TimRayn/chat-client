@@ -10,13 +10,19 @@ export type LoginPageProps = {
 const LoginPage: FC<LoginPageProps> = ({ onLogin }) => {
     const [nickname, setNickname] = useState<string>('');
     const [loginLocked, setLoginLocked] = useState<boolean>(false);
+    const [loginError, setLoginError] = useState('')
 
     const handleLogin = async (e: FormEvent) => {
         setLoginLocked(true);
         e.preventDefault();
         if (!nickname) return;
-        const user = await login(nickname);
-        onLogin(user);
+        try {
+            const user = await login(nickname);
+            onLogin(user);
+        } catch (e) {
+            setLoginError(e.toString());
+            setLoginLocked(false);
+        }
     };
 
     return (
@@ -28,6 +34,7 @@ const LoginPage: FC<LoginPageProps> = ({ onLogin }) => {
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)} />
                 <button type='submit' disabled={loginLocked}>Login</button>
+                {loginError && <p>{loginError}</p>}
             </form>
         </div>
     );
